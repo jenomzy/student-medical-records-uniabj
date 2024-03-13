@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Medical Records</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #app {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>University of Abuja Student Medical Records</h1>
+        <input type="text" id="searchInput" placeholder="Search...">
+        <table id="records-table">
+            <thead>
+                <tr>
+                    <th>Matric No.</th>
+                    <th>Name</th>
+                    <th>Level</th>
+                    <th>Faculty</th>
+                    <th>Department</th>
+                    <th>Medical Condition</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Records will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableBody = document.querySelector('#records-table tbody');
+            const searchInput = document.querySelector('#searchInput');
+            let studentsData = [];
+
+            // Function to render student records
+            function renderRecords(students) {
+                tableBody.innerHTML = '';
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${student.id}</td>
+                <td>${student.name}</td>
+                <td>${student.level}</td>
+                <td>${student.faculty}</td>
+                <td>${student.department}</td>
+                <td>${student.medicalCondition}</td>
+              `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Filter records based on search input
+            function filterRecords(searchTerm) {
+                const filteredStudents = studentsData.filter(student => {
+                    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                    return Object.values(student).some(value => {
+                        if (typeof value === 'string' && value.toLowerCase().includes(lowerCaseSearchTerm)) {
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+                renderRecords(filteredStudents);
+            }
+
+
+
+            // Fetch student records from server
+            fetch('/api/students')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch student records');
+                    }
+                    return response.json();
+                })
+                .then(students => {
+                    studentsData = students; // Save the student data for filtering
+                    renderRecords(students);
+
+                    // Event listener for search input
+                    searchInput.addEventListener('input', function () {
+                        filterRecords(this.value.trim());
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+
+</html>

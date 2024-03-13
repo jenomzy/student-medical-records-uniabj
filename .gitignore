@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# Editor directories
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# Compiled or built files
+.dist/
+
+# npm debugging logs
+npm-debug.log*
